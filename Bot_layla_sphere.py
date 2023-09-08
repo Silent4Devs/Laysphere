@@ -11,7 +11,7 @@ import pytesseract
 # Al finalizar utiliza el comando que se encuenta en \Layla_Sphere\zona de pruebas\Conseguir_Rutas.ipynb para verificar
 # que la ruta esta correctamente implementada, al finalizar, solo pega la ruta en el codigo que se encuentra abajo
 
-pytesseract.pytesseract.tesseract_cmd = r"C:/Program Files/Tesseract-OCR/tesseract.exe"
+#pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
 
 ### CARGAR DOCUMENTOS ###
 
@@ -119,7 +119,7 @@ def ask_with_memory(vector_store, question, chat_history=[]):
     from langchain.chains import ConversationalRetrievalChain
     from langchain.chat_models import ChatOpenAI
 
-    llm = ChatOpenAI(temperature=0.1)
+    llm = ChatOpenAI(temperature=1)
     retriever = vector_store.as_retriever(
         search_type="similarity", search_kwargs={"k": 3}
     )
@@ -153,9 +153,10 @@ if __name__ == "__main__":
         unsafe_allow_html=True,
     )
     with st.sidebar:
-        api_key = st.text_input("OPEN_API_Key:", type="password")
-        if api_key:
-            os.environ["OPEN_API_KEY"] = api_key
+        api_key = os.environ["OPENAI_API_KEY"]
+        #api_key = st.text_input("OPEN_API_Key:", type="password")
+        #if api_key:
+        #    os.environ["OPEN_API_KEY"] = api_key
 
         uploaded_file = st.file_uploader(
             "Upload a file:", type=["pdf", "docx", "txt", "pptx", "jpg", "png"]

@@ -1,0 +1,7 @@
+venv
+*.pdf
+*.jpg
+*.png
+*.docx
+*.pptx
+.idea
