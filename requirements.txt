@@ -1,0 +1,14 @@
+openai
+langchain
+chromadb
+docx2txt
+pypdf
+streamlit
+tiktoken
+unstructured
+python-pptx
+pdfminer
+pdf2image
+tesseract
+unstructured_inference
+pdfminer.six
