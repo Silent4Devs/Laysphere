@@ -1,0 +1,25 @@
+Para hacer funcionar el bot, se necesitaran las siguientes librerias:
+openai
+langchain 
+chromadb
+docx2txt
+pypdf
+streamlit
+tiktoken
+unstructured
+python-pptx
+pdfminer
+pdf2image
+tesseract
+unstructured_inference
+pdfminer.six
+
+En cuanto la libreria tesseract, no es obligatorio, pero si no la instalas, recuerda comentarla en el codigo del bot laysphere y comentar las opciones que avisan que puede leer imagenes, ya que esas funciones no funcionaran sin tesseract.
+
+El bot tiene documentos adicionales en la carpeta, que son para localizar paths, otras versiones del bot, estas las encuentras en la carpeta "Zona de pruebas",
+
+Ademas cuenta con una datbase que se necesitaba para lanzarlo como demo se encuentra en la carpeta "Database".
+
+
+Las cosas faltantes para lanzar el bot era estructurar una database dentro del bot sin necesidad de darle documentos manualmente al bot para analizarlo, para que al final se creara con fastapi el bot dentro de ella, para poder empezar a construir el front del bot.
+
