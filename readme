@@ -22,6 +22,10 @@ Si es tu primera vez usandolo, deberas instalarlas, para instalarlas todas al in
 
 pip install requirements.txt
 
+De no correr directamente utiliza
+
+pip install -r requirements.txt
+
 En cuanto la libreria tesseract, no es obligatorio, pero si no la instalas, recuerda comentarla en el archivo "Bot_layla_sphere.py"
 y comentar las opciones que avisan que puede leer imagenes, ya que esas funciones no funcionaran 
 sin tesseract.

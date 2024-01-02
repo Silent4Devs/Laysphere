@@ -11,7 +11,7 @@ import pytesseract
 # Al finalizar utiliza el comando que se encuenta en \Layla_Sphere\zona de pruebas\Conseguir_Rutas.ipynb para verificar
 # que la ruta esta correctamente implementada, al finalizar, solo pega la ruta en el codigo que se encuentra abajo
 
-#pytesseract.pytesseract.tesseract_cmd = "C:/Program Files/Tesseract-OCR/tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 
 ### CARGAR DOCUMENTOS ###
 
