@@ -1,10 +1,24 @@
 import streamlit as st
+import chromadb
+import os 
+from fastapi import FastAPI
+from langchain.agents import AgentExecutor, tool
+from langchain.agents.format_scratchpad import format_to_openai_functions
+from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
+from langchain.schema import HumanMessage, SystemMessage
+from langchain_community.chat_models import ChatOpenAI
+from langchain.llms import openai
+from typing import Optional, Union, List
+from pydantic import BaseModel, ValidationError
+#from sentence_transformers import SentenceTransformer
+from dotenv import load_dotenv, find_dotenv
 from pdfminer.high_level import extract_pages
 from pdfminer.high_level import extract_text
-import os
 import pytesseract
+import shutil
+
 
 ### PATHS ###
 # Para instalar teseract deberas hacer los pasos que se realizan en el siguiente link: https://www.youtube.com/watch?v=3Q1gTDXzGnU&t=12s
@@ -16,42 +30,76 @@ pytesseract.pytesseract.tesseract_cmd = "/usr/bin/tesseract"
 ### CARGAR DOCUMENTOS ###
 
 
+#Emulando 'switch' en Python por medio de diccionarios y de este modo se agiliza el proceso
+
+class DocumentInfo(BaseModel):
+    notas: Union[str, List[str]]
+    extension: str
+    content: Optional[str] = None 
+
 def load_document(file):
+    
     import os
+    
+    notas, extension = os.path.splitext(file)
 
-    name, extension = os.path.splitext(file)
-
-    if extension == ".pdf":
+    def load_pdf(file):
         from langchain.document_loaders import PyPDFLoader
-
-        print(f"Loading{file}")
+        print(f"Loading {file}")
         loader = PyPDFLoader(file)
-    elif extension == ".docx":
-        from langchain.document_loaders import Docx2txtLoader
+        return loader.load()
 
+    def load_docx(file):
+        from langchain.document_loaders import Docx2txtLoader
         print(f"Loading {file}")
         loader = Docx2txtLoader(file)
-    elif extension == ".txt":
-        from langchain.document_loaders import TextLoader
+        return loader.load()
 
+    def load_txt(file):
+        from langchain.document_loaders import TextLoader
         print(f"Loading {file}")
         loader = TextLoader(file)
-    elif extension == ".pptx":
-        from langchain.document_loaders import UnstructuredPowerPointLoader
+        return loader.load()
 
+    def load_pptx(file):
+        
+        from langchain.document_loaders import UnstructuredPowerPointLoader
         print(f"Loading {file}")
         loader = UnstructuredPowerPointLoader(file)
-    elif extension in (".jpg", ".png"):
+        return loader.load()
+    
+    def load_image(file):
+        
         from langchain.document_loaders.image import UnstructuredImageLoader
-
         print(f"Loading {file}")
         loader = UnstructuredImageLoader(file)
-    else:
-        print("Documento no soportado")
-        return None
+        return loader.load()
 
-    data = loader.load()
-    return data
+     ### Formato válido
+    def default_loader(file):
+        print(f"Documento '{file}' no soportado o tipo de archivo '{extension}' no reconocido")
+        return DocumentInfo(name=file_name, extension=extension)
+
+		
+  # Creamos un diccionario que asocia el tipo de documento con la respuesta que dará a la hora de cargar el documento	
+    switcher = {
+        ".pdf": load_pdf,
+        ".docx": load_docx,
+        ".txt": load_txt,
+        ".pptx": load_pptx,
+        ".jpg": load_image,
+        ".png": load_image,
+    }
+    
+    loader_function = switcher.get(extension, default_loader)
+    document_info = loader_function(file)
+    
+
+    print (document_info)
+    return document_info    
+
+
+    
 
 
 ### CARGAR CHUNKS ###
@@ -83,7 +131,7 @@ def ask_and_get_answer(vector_store, q, k=3):
     from langchain.chains import RetrievalQA
     from langchain.chat_models import ChatOpenAI
 
-    llm = ChatOpenAI(model="text-embedding-ada-002", temperature=1)
+    llm = ChatOpenAI(model="text-embedding-ada-002", temperature=0.7)
 
     retriever = vector_store.as_retriever(
         search_type="similarity", search_kwargs={"k": k}
@@ -119,7 +167,7 @@ def ask_with_memory(vector_store, question, chat_history=[]):
     from langchain.chains import ConversationalRetrievalChain
     from langchain.chat_models import ChatOpenAI
 
-    llm = ChatOpenAI(temperature=1)
+    llm = ChatOpenAI(temperature=0.7)
     retriever = vector_store.as_retriever(
         search_type="similarity", search_kwargs={"k": 3}
     )
@@ -154,9 +202,9 @@ if __name__ == "__main__":
     )
     with st.sidebar:
         api_key = os.environ["OPENAI_API_KEY"]
-        #api_key = st.text_input("OPEN_API_Key:", type="password")
+        #api_key = st.text_input("OPENAI_API_KEY:", type="password")
         #if api_key:
-        #    os.environ["OPEN_API_KEY"] = api_key
+        #    os.environ["OPENAI_API_KEY"] = api_key
 
         uploaded_file = st.file_uploader(
             "Upload a file:", type=["pdf", "docx", "txt", "pptx", "jpg", "png"]
@@ -213,4 +261,13 @@ if __name__ == "__main__":
                 f'{value} \n {"-" * 100} \n {st.session_state.history}'
             )
             h = st.session_state.history
-            st.text_area(label="Chat History", value=h, key="history", height=400)
+           
+ 
+          
+            
+          
+            
+
+load_dotenv(find_dotenv(),override=True)
+def OPENAI_API_KEY(self):
+    return os.environ.get("OPENAI_API_KEY", "")

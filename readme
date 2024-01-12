@@ -20,7 +20,7 @@ pdfminer.six
 
 Si es tu primera vez usandolo, deberas instalarlas, para instalarlas todas al instante, abre tu terminal y escribe el siguiente comando:
 
-pip install requirements.txt
+pip install -r requirements.txt
 
 De no correr directamente utiliza
 
@@ -29,6 +29,12 @@ pip install -r requirements.txt
 En cuanto la libreria tesseract, no es obligatorio, pero si no la instalas, recuerda comentarla en el archivo "Bot_layla_sphere.py"
 y comentar las opciones que avisan que puede leer imagenes, ya que esas funciones no funcionaran 
 sin tesseract.
+
+
+pip install langchain_openai
+pip install langchain --upgrade
+
+
 
 2. HACER FUNCIONAR EL BOT
 
