@@ -1,15 +1,16 @@
 import streamlit as st
 import chromadb
+import openai
 import os 
 from fastapi import FastAPI
 from langchain.agents import AgentExecutor, tool
-from langchain.agents.format_scratchpad import format_to_openai_functions
-from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.schema import HumanMessage, SystemMessage
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.llms import openai
+from decouple import config
+from langchain import PromptTemplate
 from typing import Optional, Union, List
 from pydantic import BaseModel, ValidationError
 #from sentence_transformers import SentenceTransformer
@@ -78,7 +79,11 @@ def load_document(file):
      ### Formato válido
     def default_loader(file):
         print(f"Documento '{file}' no soportado o tipo de archivo '{extension}' no reconocido")
-        return DocumentInfo(name=file_name, extension=extension)
+        return DocumentInfo(
+            notas: Union[str, List[str]]
+            extension: str
+            content: Optional[str] = None 
+            )
 
 		
   # Creamos un diccionario que asocia el tipo de documento con la respuesta que dará a la hora de cargar el documento	
@@ -126,10 +131,10 @@ def create_embeddings(chunks):
 
 ### SPEAKING ###
 
-
+from langchain.chains import RetrievalQA
+from langchain.chat_models import ChatOpenAI
 def ask_and_get_answer(vector_store, q, k=3):
-    from langchain.chains import RetrievalQA
-    from langchain.chat_models import ChatOpenAI
+
 
     llm = ChatOpenAI(model="text-embedding-ada-002", temperature=0.7)
 
